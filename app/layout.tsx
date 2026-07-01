@@ -1,12 +1,17 @@
-import { Geist, Geist_Mono, Inter, Roboto } from "next/font/google"
+import { Cormorant_Garamond, Geist_Mono, Inter, Roboto } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
+const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" })
+
+const cormorantDisplay = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-display",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -22,7 +27,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, robotoHeading.variable)}
+      className={cn(
+        "antialiased font-sans",
+        inter.variable,
+        robotoHeading.variable,
+        cormorantDisplay.variable,
+        fontMono.variable
+      )}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
