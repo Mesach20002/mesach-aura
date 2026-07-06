@@ -12,9 +12,9 @@ export function LandingSocialProof() {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
-          {["Testimonial", "Testimonial"].map((label) => (
+          {["Testimonial", "Testimonial"].map((label, index) => (
             <div
-              key={label}
+              key={`${label}-${index}`}
               className="rounded-lg border border-dashed border-border bg-muted/30 px-6 py-10"
             >
               <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">

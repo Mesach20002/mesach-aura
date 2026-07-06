@@ -10,7 +10,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-svh">
       <DashboardSidebar pathname={pathname} />
-      <main className="flex-1 overflow-auto p-8">{children}</main>
+      <main className="flex-1 overflow-auto p-8 print:p-0">{children}</main>
     </div>
   )
 }

@@ -1,0 +1,41 @@
+{
+  "aur-1048": {
+    "id": "aur-1048",
+    "reportNumber": "AUR-1048",
+    "generatedAt": "Today",
+    "profile": "Combination skin",
+    "disclaimer": "This report summarizes visible cosmetic skin observations and Aurora product recommendations. It is not a medical diagnosis.",
+    "findings": [
+      {
+        "label": "Hydration",
+        "band": "Moderate dryness",
+        "detail": "Prioritize barrier support."
+      },
+      {
+        "label": "Pigmentation",
+        "band": "Mild uneven tone",
+        "detail": "Use daily brightening care."
+      },
+      {
+        "label": "Texture",
+        "band": "Slight roughness",
+        "detail": "Keep exfoliation gentle."
+      }
+    ],
+    "recommendedProducts": [
+      {
+        "id": "p-cleanser",
+        "name": "Aurora Gentle Botanical Cleanser"
+      },
+      {
+        "id": "p-serum",
+        "name": "Aurora Turmeric Glow Serum"
+      },
+      {
+        "id": "p-moisturizer",
+        "name": "Aurora Barrier Repair Moisturizer"
+      }
+    ],
+    "exportNote": "Use the Save as PDF button to open the print dialog and export this report. A server-generated PDF can be added later when the PDF package is approved."
+  }
+}
