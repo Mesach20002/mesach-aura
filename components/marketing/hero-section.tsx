@@ -42,7 +42,7 @@ export function HeroSection() {
           </div>
 
           <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
-            {trustItems.map((item) => {
+            {trustItems.map((item: any) => {
               const TrustIcon = item.icon
 
               return (

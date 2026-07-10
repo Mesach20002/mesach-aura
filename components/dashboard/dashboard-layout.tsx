@@ -168,7 +168,7 @@ function DashboardBrand() {
 function DashboardNav({ pathname }: { pathname: string }) {
   return (
     <nav className="flex flex-col gap-1 p-4" aria-label="Dashboard">
-      {navItems.map((item) => {
+      {navItems.map((item: any) => {
         const Icon = item.icon
         const baseHref = item.href.split("#")[0]
         const isActive =
@@ -204,7 +204,7 @@ function MobileNav({ pathname }: { pathname: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="rounded-lg">
         <DropdownMenuLabel>Aurora Dashboard</DropdownMenuLabel>
-        {navItems.map((item) => {
+        {navItems.map((item: any) => {
           const Icon = item.icon
           const baseHref = item.href.split("#")[0]
           const isActive =

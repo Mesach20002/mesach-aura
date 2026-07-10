@@ -117,7 +117,7 @@ function formatReportContext(report: SkinReport): string {
     concerns,
     `- summary: ${report.assessment.summary}`,
     "- guidance:",
-    ...report.assessment.guidance.map((item) => `  - ${item}`),
+    ...report.assessment.guidance.map((item: any) => `  - ${item}`),
     `- disclaimer: ${report.assessment.disclaimer}`,
   ].join("\n")
 }

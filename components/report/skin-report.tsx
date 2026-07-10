@@ -122,7 +122,7 @@ export function SkinReport({ report }: SkinReportProps) {
               </p>
             </div>
             <ul className="mt-5 grid gap-3 text-sm leading-6 text-muted-foreground md:grid-cols-2">
-              {report.assessment.guidance.map((item) => (
+              {report.assessment.guidance.map((item: any) => (
                 <li
                   key={item}
                   className="rounded-lg border border-border bg-background p-4"

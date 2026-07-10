@@ -52,7 +52,7 @@ export function EnterpriseSection() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {enterpriseItems.map((item) => {
+            {enterpriseItems.map((item: any) => {
               const ItemIcon = item.icon
 
               return (

@@ -322,7 +322,7 @@ export function CameraCapture({ onImageCaptured }: CameraCaptureProps) {
                 Quality Guidance
               </h3>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                {readyGuidance.map((item) => (
+                {readyGuidance.map((item: any) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>

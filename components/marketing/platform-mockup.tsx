@@ -97,7 +97,7 @@ export function PlatformMockup() {
               </p>
             </div>
             <div className="mt-4 grid grid-cols-3 gap-3">
-              {analytics.map((item) => (
+              {analytics.map((item: any) => (
                 <div
                   key={item.label}
                   className="rounded-lg border border-border bg-card p-3"
