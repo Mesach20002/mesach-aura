@@ -105,7 +105,7 @@ export async function GET(request: Request) {
       name: user.name,
       role: user.role,
       emailVerified: user.emailVerified,
-      hasPasswordHash: user.accounts.some((account) =>
+      hasPasswordHash: user.accounts.some((account: { password?: string | null }) =>
         Boolean(account.password)
       ),
       passwordHashField: "Account.password",
