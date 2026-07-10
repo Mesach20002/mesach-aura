@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  DERMATOLOGIST
+}
+
+enum ScanStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SeverityBand {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum SkinType {
+  NORMAL
+  DRY
+  OILY
+  COMBINATION
+  SENSITIVE_LOOKING
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  emailVerified  Boolean         @default(false)
+  image          String?
+  username       String?         @unique
+  displayUsername String?
+  role           UserRole        @default(USER)
+  sessions       Session[]
+  accounts       Account[]
+  reports        SkinReport[]
+  consentRecords ConsentRecord[]
+  auditLogs      AuditLog[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+model SkinReport {
+  id              String                  @id @default(cuid())
+  userId          String?
+  user            User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  skinType        SkinType
+  summary         String                  @db.Text
+  guidance        Json
+  disclaimer      String                  @db.Text
+  assessment      SkinAssessment?
+  recommendations ProductRecommendation[]
+  consentRecords  ConsentRecord[]
+  scanEvents      ScanEvent[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SkinAssessment {
+  id               String       @id @default(cuid())
+  reportId         String       @unique
+  report           SkinReport   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  hydrationBand    SeverityBand
+  textureBand      SeverityBand
+  poresBand        SeverityBand
+  rednessBand      SeverityBand
+  pigmentationBand SeverityBand
+  fineLinesBand    SeverityBand
+  dullnessBand     SeverityBand
+  oilinessBand     SeverityBand
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model ProductRecommendation {
+  id              String       @id @default(cuid())
+  reportId        String
+  report          SkinReport   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  productName     String
+  productUrl      String?
+  matchedConcerns Json
+  reason          String       @db.Text
+  priorityBand    SeverityBand
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([productName])
+}
+
+model ConsentRecord {
+  id          String      @id @default(cuid())
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  reportId    String?
+  report      SkinReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  consentType String
+  accepted    Boolean
+  acceptedAt  DateTime
+  createdAt   DateTime    @default(now())
+}
+
+model ScanEvent {
+  id           String      @id @default(cuid())
+  reportId     String?
+  report       SkinReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  status       ScanStatus
+  errorMessage String?
+  createdAt    DateTime    @default(now())
+
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+}

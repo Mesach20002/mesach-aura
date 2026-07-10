@@ -4,10 +4,10 @@ import { getReportDetail } from "@/lib/reports"
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ reportId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { reportId } = await params
-  const report = await getReportDetail(reportId)
+  const { id } = await params
+  const report = await getReportDetail(id)
 
   if (!report) {
     return NextResponse.json({ error: "Report not found" }, { status: 404 })
@@ -20,10 +20,10 @@ export async function GET(
         <meta charset="utf-8" />
         <title>${report.reportNumber}</title>
         <style>
-          body { font-family: Arial, sans-serif; color: #111827; margin: 32px; }
+          body { font-family: Arial, sans-serif; margin: 32px; }
           h1 { margin-bottom: 8px; }
-          .meta { color: #4b5563; margin-bottom: 24px; }
-          .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+          .meta { margin-bottom: 24px; }
+          .card { border: 1px solid currentColor; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
           .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
           ul { padding-left: 18px; }
         </style>
@@ -48,7 +48,7 @@ export async function GET(
             .join("")}
         </div>
         <div class="card">
-          <h3>Recommended Aurora routine</h3>
+          <h3>Aurora wellness routine</h3>
           <ul>
             ${report.recommendedProducts.map((product) => `<li>${product.name}</li>`).join("")}
           </ul>

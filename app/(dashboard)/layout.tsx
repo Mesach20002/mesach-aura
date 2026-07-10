@@ -1,9 +1,18 @@
-import { DashboardShell } from "@/components/layouts/dashboard-shell"
+import { redirect } from "next/navigation"
 
-export default function DashboardLayout({
+import { DashboardLayout as AuroraDashboardLayout } from "@/components/dashboard/dashboard-layout"
+import { getCurrentUser } from "@/lib/auth/session"
+
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <DashboardShell>{children}</DashboardShell>
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/login?redirect=/dashboard")
+  }
+
+  return <AuroraDashboardLayout user={user}>{children}</AuroraDashboardLayout>
 }

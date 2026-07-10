@@ -1,7 +1,10 @@
 import { IconFileDescription, IconPrinter } from "@tabler/icons-react"
 import { notFound } from "next/navigation"
 
+import { ProductRecommendations } from "@/components/report/product-recommendations"
 import { ReportDownloadButton } from "@/components/report/report-download-button"
+import { getProductRecommendations } from "@/lib/recommendations/engine"
+import type { SeverityBand } from "@/lib/recommendations/types"
 import { getReportDetail } from "@/lib/reports"
 
 const REPORT_ID = "aur-1048"
@@ -12,6 +15,21 @@ export default async function ReportsPage() {
   if (!report) {
     notFound()
   }
+
+  const recommendations = getProductRecommendations({
+    skinType: report.profile,
+    concerns: report.findings.flatMap((finding) =>
+      getConcernTerms(finding.label)
+    ),
+    severityBands: Object.fromEntries(
+      report.findings.flatMap((finding) =>
+        getConcernTerms(finding.label).map((concern) => [
+          concern,
+          getSeverityBand(finding.band),
+        ])
+      )
+    ) as Partial<Record<string, SeverityBand>>,
+  })
 
   return (
     <div className="space-y-8">
@@ -65,34 +83,8 @@ export default async function ReportsPage() {
           ))}
         </section>
 
-        <section className="border-t border-border py-6" aria-labelledby="routine-heading">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <h3 id="routine-heading" className="text-xl font-medium">
-              Recommended Aurora routine
-            </h3>
-            <p className="text-sm text-muted-foreground">Click a step to expand the details.</p>
-          </div>
-          <div className="mt-4 grid gap-3">
-            {report.recommendedProducts.map((product, index) => (
-              <details key={product.id} className="rounded-lg border border-border p-4">
-                <summary className="flex cursor-pointer list-none items-center gap-4">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground">
-                    {index + 1}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{product.name}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Tap to view why it fits this routine
-                    </p>
-                  </div>
-                </summary>
-                <div className="mt-3 rounded-md border border-dashed border-border bg-muted/20 p-3 text-sm leading-6 text-muted-foreground">
-                  This step is suggested for your profile to support hydration, texture balance,
-                  and a more even-looking complexion.
-                </div>
-              </details>
-            ))}
-          </div>
+        <section className="border-t border-border py-6">
+          <ProductRecommendations recommendations={recommendations} />
         </section>
 
         <section className="border-t border-border pt-6" aria-labelledby="export-heading">
@@ -111,4 +103,26 @@ export default async function ReportsPage() {
       </article>
     </div>
   )
+}
+
+function getSeverityBand(value: string): SeverityBand {
+  const band = value.toLowerCase()
+
+  if (band.includes("high") || band.includes("noticeable")) return "high"
+  if (band.includes("moderate") || band.includes("balanced")) return "moderate"
+
+  return "low"
+}
+
+function getConcernTerms(label: string): string[] {
+  switch (label.toLowerCase()) {
+    case "hydration":
+      return ["hydration", "dryness"]
+    case "texture":
+      return ["uneven texture", "rough texture"]
+    case "pigmentation":
+      return ["pigmentation appearance", "dark spots appearance", "uneven tone"]
+    default:
+      return [label.toLowerCase()]
+  }
 }

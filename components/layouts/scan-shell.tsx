@@ -5,11 +5,11 @@ export function ScanShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-svh flex-col">
       <header className="border-b border-border">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
-          <Link href="/" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-            Exit
+          <Link href="/dashboard" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            Dashboard
           </Link>
           <span className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-            Skin scan
+            Aurora Account · Skin scan
           </span>
           <span className="w-10" aria-hidden />
         </div>
