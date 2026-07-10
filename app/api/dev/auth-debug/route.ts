@@ -88,8 +88,7 @@ async function getSqliteAuthDebugRecord(identifier: string): Promise<AuthDebugRe
       authAccountExists: !!accountResult,
       passwordHashPresent: !!accountResult?.password,
     }
-  } catch (error) {
-    console.error("Error getting SQLite auth debug record:", error)
+  } catch {
     return {
       userExists: false,
       authAccountExists: false,
@@ -135,8 +134,7 @@ async function getPrismaAuthDebugRecord(identifier: string): Promise<AuthDebugRe
       authAccountExists: user.accounts.length > 0,
       passwordHashPresent: hasPasswordAccount,
     }
-  } catch (error) {
-    console.error("Error getting Prisma auth debug record:", error)
+  } catch {
     return {
       userExists: false,
       authAccountExists: false,
