@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
+import { headers } from "next/headers"
 
+import { auth } from "@/lib/auth/auth"
 import {
   getDevAuthSqlite,
   shouldUseDevSqliteAuth,
@@ -21,8 +23,18 @@ type SqliteAuthUser = {
 }
 
 export async function GET(request: Request) {
-  if (process.env.NODE_ENV !== "development") {
-    return new Response("Not found", { status: 404 })
+  const session = await auth.api
+    .getSession({
+      headers: await headers(),
+    })
+    .catch(() => null)
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  if (session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const { searchParams } = new URL(request.url)
@@ -30,7 +42,11 @@ export async function GET(request: Request) {
 
   if (!identifier) {
     return NextResponse.json(
-      { connected: true, exists: false, error: "Missing identifier." },
+      {
+        connected: true,
+        exists: false,
+        error: "The identifier query parameter is required.",
+      },
       { status: 400 }
     )
   }
@@ -105,9 +121,7 @@ export async function GET(request: Request) {
       name: user.name,
       role: user.role,
       emailVerified: user.emailVerified,
-      hasPasswordHash: user.accounts.some((account: { password?: string | null }) =>
-        Boolean(account.password)
-      ),
+      hasPasswordHash: user.accounts.some((account) => Boolean(account.password)),
       passwordHashField: "Account.password",
       authAccountCount: user._count.accounts,
       activeSessionCount: user._count.sessions,

@@ -103,7 +103,7 @@ export function getProductRecommendations(
         },
       }
     })
-    .filter((item: any) => item.score > 0)
+    .filter((item) => item.score > 0)
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score
 
@@ -118,5 +118,5 @@ export function getProductRecommendations(
       )
     })
     .slice(0, maxResults)
-    .map((item: any) => item.recommendation)
+    .map((item) => item.recommendation)
 }

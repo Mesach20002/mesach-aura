@@ -7,8 +7,7 @@ export function canViewReport(
   if (user?.role === "ADMIN") return true
 
   if (!reportUserId) {
-    // TODO(auth): Tighten guest report access after auth is fully connected.
-    return true
+    return false
   }
 
   return user?.id === reportUserId

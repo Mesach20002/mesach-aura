@@ -32,7 +32,7 @@ export function SecuritySection() {
   return (
     <section id="features" className="border-b border-border bg-primary/10">
       <div className="mx-auto grid max-w-7xl gap-0 px-6 py-8 md:grid-cols-4">
-        {trustItems.map((item: any) => {
+        {trustItems.map((item) => {
           const TrustIcon = item.icon
 
           return (

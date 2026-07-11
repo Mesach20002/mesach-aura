@@ -14,23 +14,17 @@ export async function answerReportQuestion(
 ): Promise<ReportChatMessage> {
   const provider =
     process.env.REPORT_CHAT_PROVIDER === "gemini" ? "gemini" : "mock"
-  const geminiConfigured =
-    Boolean(process.env.GEMINI_API_KEY) &&
-    process.env.GEMINI_API_KEY !== "your_api_key_here"
-
-  console.log("Report chat provider:", provider)
-  console.log({
-    provider: process.env.REPORT_CHAT_PROVIDER,
-    geminiConfigured,
-  })
 
   if (provider === "gemini") {
     try {
       return await answerReportQuestionWithGemini(input)
     } catch (error) {
+      if (process.env.NODE_ENV === "production") {
+        throw error
+      }
+
       console.warn(
-        "Aurora report chat Gemini provider failed; using mock fallback.",
-        error
+        "Aurora report chat Gemini provider failed; using mock fallback in development."
       )
 
       return answerReportQuestionWithMock(input)

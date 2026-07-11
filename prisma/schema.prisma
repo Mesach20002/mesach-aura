@@ -33,21 +33,21 @@ enum SkinType {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String
-  email          String          @unique
-  emailVerified  Boolean         @default(false)
-  image          String?
-  username       String?         @unique
+  id              String          @id @default(cuid())
+  name            String
+  email           String          @unique
+  emailVerified   Boolean         @default(false)
+  image           String?
+  username        String?         @unique
   displayUsername String?
-  role           UserRole        @default(USER)
-  sessions       Session[]
-  accounts       Account[]
-  reports        SkinReport[]
-  consentRecords ConsentRecord[]
-  auditLogs      AuditLog[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  role            UserRole        @default(USER)
+  sessions        Session[]
+  accounts        Account[]
+  reports         SkinReport[]
+  consentRecords  ConsentRecord[]
+  auditLogs       AuditLog[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@index([email])
 }

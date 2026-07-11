@@ -133,7 +133,7 @@ export default async function DeveloperLauncherPage() {
           ) : null}
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {launcherCards.map((item: any) =>
+            {launcherCards.map((item) =>
               item.enabled && item.href ? (
                 <Link
                   key={item.label}
@@ -212,7 +212,7 @@ export default async function DeveloperLauncherPage() {
           </h2>
           <Card className="rounded-lg border border-border">
             <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {statusItems.map((item: any) => (
+              {statusItems.map((item) => (
                 <div
                   key={item}
                   className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3 text-sm"

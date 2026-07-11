@@ -60,7 +60,18 @@ export async function POST(request: Request) {
     return jsonError("Please enter your password.")
   }
 
-  const identity = await findExistingAuthIdentity(identifier)
+  let identity: ExistingAuthIdentity
+
+  try {
+    identity = await findExistingAuthIdentity(identifier)
+  } catch (error) {
+    logAuthError("Unable to check Aurora Account identity.", error)
+
+    return jsonError(
+      "Authentication service is temporarily unavailable.",
+      503
+    )
+  }
 
   if (!identity.exists) {
     return jsonError("No Aurora Account exists with that email address.", 404)
@@ -86,13 +97,24 @@ export async function POST(request: Request) {
         }
   const signInHeaders = new Headers(request.headers)
   signInHeaders.set("content-type", "application/json")
-  const signInResponse = await auth.handler(
-    new Request(signInUrl, {
-      method: "POST",
-      headers: signInHeaders,
-      body: JSON.stringify(signInBody),
-    })
-  )
+  let signInResponse: Response
+
+  try {
+    signInResponse = await auth.handler(
+      new Request(signInUrl, {
+        method: "POST",
+        headers: signInHeaders,
+        body: JSON.stringify(signInBody),
+      })
+    )
+  } catch (error) {
+    logAuthError("Unable to complete Aurora Account sign-in.", error)
+
+    return jsonError(
+      "Authentication service is temporarily unavailable.",
+      503
+    )
+  }
 
   if (!signInResponse.ok) {
     const response = jsonError(
@@ -154,4 +176,13 @@ async function findExistingAuthIdentity(
     kind: isEmail ? "email" : "username",
     value,
   }
+}
+
+function logAuthError(message: string, error: unknown): void {
+  if (process.env.NODE_ENV === "production") {
+    console.error(message)
+    return
+  }
+
+  console.error(message, error)
 }

@@ -111,5 +111,23 @@ export async function POST(request: Request) {
     body: JSON.stringify(signUpBody),
   })
 
-  return auth.handler(signUpRequest)
+  try {
+    return await auth.handler(signUpRequest)
+  } catch (error) {
+    logAuthError("Unable to complete Aurora Account registration.", error)
+
+    return jsonError(
+      "Account creation service is temporarily unavailable.",
+      503
+    )
+  }
+}
+
+function logAuthError(message: string, error: unknown): void {
+  if (process.env.NODE_ENV === "production") {
+    console.error(message)
+    return
+  }
+
+  console.error(message, error)
 }

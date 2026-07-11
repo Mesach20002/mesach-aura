@@ -11,7 +11,6 @@ import {
   IconMenu2,
   IconMessageCircle,
   IconSettings,
-  IconSparkles,
   IconUserCircle,
 } from "@tabler/icons-react"
 
@@ -168,7 +167,7 @@ function DashboardBrand() {
 function DashboardNav({ pathname }: { pathname: string }) {
   return (
     <nav className="flex flex-col gap-1 p-4" aria-label="Dashboard">
-      {navItems.map((item: any) => {
+      {navItems.map((item) => {
         const Icon = item.icon
         const baseHref = item.href.split("#")[0]
         const isActive =
@@ -204,7 +203,7 @@ function MobileNav({ pathname }: { pathname: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="rounded-lg">
         <DropdownMenuLabel>Aurora Dashboard</DropdownMenuLabel>
-        {navItems.map((item: any) => {
+        {navItems.map((item) => {
           const Icon = item.icon
           const baseHref = item.href.split("#")[0]
           const isActive =

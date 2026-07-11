@@ -20,7 +20,15 @@ function shouldUseMockMode(): boolean {
 export function getDatabaseUrl(): string | null {
   const databaseUrl = process.env.DATABASE_URL
 
-  if (!databaseUrl || databaseUrl === placeholderDatabaseUrl || shouldUseMockMode()) {
+  if (!databaseUrl || databaseUrl === placeholderDatabaseUrl) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("DATABASE_URL must be configured for production.")
+    }
+
+    return null
+  }
+
+  if (shouldUseMockMode()) {
     return null
   }
 
@@ -44,7 +52,7 @@ export function getPrismaClient(): PrismaClient {
       log:
         process.env.NODE_ENV === "development"
           ? ["query", "error", "warn"]
-          : ["error"],
+          : [],
     })
   }
 

@@ -298,7 +298,7 @@ function getRecommendationProduct(
 
 function getStringArray(value: Prisma.JsonValue): string[] {
   return Array.isArray(value)
-    ? value.filter((item: any): item is string => typeof item === "string")
+    ? value.filter((item: unknown): item is string => typeof item === "string")
     : []
 }
 

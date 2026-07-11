@@ -25,7 +25,11 @@ export async function GET() {
       )
     }
 
-    console.error("Failed to load analytics summary", error)
+    if (process.env.NODE_ENV === "production") {
+      console.error("Failed to load analytics summary")
+    } else {
+      console.error("Failed to load analytics summary", error)
+    }
 
     return NextResponse.json(
       { error: "Failed to load analytics summary" },

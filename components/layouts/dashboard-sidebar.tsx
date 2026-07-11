@@ -18,7 +18,7 @@ export function DashboardSidebar({ pathname }: { pathname: string }) {
         </Link>
       </div>
       <nav className="flex flex-col gap-1 p-4">
-        {navItems.map((item: any) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 
           return (

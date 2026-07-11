@@ -50,7 +50,7 @@ export function PlatformOverview() {
     >
       <div className="mx-auto max-w-7xl px-6">
         <div className="-mt-10 grid gap-0 overflow-hidden rounded-lg border border-border bg-card shadow-lg md:grid-cols-5">
-          {statItems.map((item: any) => {
+          {statItems.map((item) => {
             const StatIcon = item.icon
 
             return (

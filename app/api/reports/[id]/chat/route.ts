@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+import { canViewReport } from "@/lib/auth/permissions"
+import { getCurrentUser } from "@/lib/auth/session"
 import { getReport } from "@/lib/reports/service"
 import { answerReportQuestion } from "@/lib/report-chat/adapter"
 import type { ReportChatMessage } from "@/lib/report-chat/types"
@@ -8,6 +10,15 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Authentication is required." },
+      { status: 401 }
+    )
+  }
+
   const { id } = await params
   const body = await readJsonBody(request)
   const message = getMessage(body)
@@ -25,13 +36,35 @@ export async function POST(
     return NextResponse.json({ error: "Report not found." }, { status: 404 })
   }
 
-  const assistantMessage = await answerReportQuestion({
-    report,
-    message,
-    history: getHistory(body),
-  })
+  if (!canViewReport(user, report.userId)) {
+    return NextResponse.json({ error: "Report access is forbidden." }, { status: 403 })
+  }
 
-  return NextResponse.json({ message: assistantMessage })
+  try {
+    const assistantMessage = await answerReportQuestion({
+      report,
+      message,
+      history: getHistory(body),
+    })
+
+    return NextResponse.json({ message: assistantMessage })
+  } catch (error) {
+    logReportChatError("Unable to answer report chat question.", error)
+
+    return NextResponse.json(
+      { error: "Unable to answer this report question right now." },
+      { status: 503 }
+    )
+  }
+}
+
+function logReportChatError(message: string, error: unknown): void {
+  if (process.env.NODE_ENV === "production") {
+    console.error(message)
+    return
+  }
+
+  console.error(message, error)
 }
 
 async function readJsonBody(request: Request): Promise<unknown> {
