@@ -78,7 +78,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Check if using SQLite auth
     if (shouldUseDevSqliteAuth()) {
       const user = getSqliteAuthUser(identifier);
 
@@ -104,7 +103,6 @@ export async function GET(request: Request) {
       });
     }
 
-    // Use Prisma for production
     const prisma = getPrismaClient();
     const isAvailable = await isPrismaAvailable();
 
@@ -211,3 +209,4 @@ export async function GET(request: Request) {
       { status: 503 }
     );
   }
+}
