@@ -1,15 +1,23 @@
-import { resetDevelopmentAuth } from "../lib/auth/reset-dev-auth"
+// @ts-nocheck
+import { resetDevAuth } from "../lib/auth/reset-dev-auth";
 
-const result = await resetDevelopmentAuth()
+async function main() {
+  console.log("Resetting development auth...");
+  const result = await resetDevAuth();
+  
+  if (result.success) {
+    console.log("✓ Development auth reset successfully!");
+    console.log("Created test users:");
+    console.log("  - admin@test.com (password: password123)");
+    console.log("  - user@test.com (password: password123)");
+    console.log("  - doctor@test.com (password: password123)");
+  } else {
+    console.error("✗ Failed to reset development auth:", result.error);
+    process.exit(1);
+  }
+}
 
-console.log("Aurora development auth reset complete.")
-console.log({
-  authStore: result.authStore,
-  usersDeleted: result.usersDeleted,
-  sessionsDeleted: result.sessionsDeleted,
-  accountsDeleted: result.accountsDeleted,
-  verificationsDeleted: result.verificationsDeleted,
-  failedLoginAttemptsDeleted: result.failedLoginAttemptsDeleted,
-  reportsPreserved: result.reportsPreserved,
-  reportsUnlinked: result.reportsUnlinked,
-})
+main().catch((error) => {
+  console.error("Script failed:", error);
+  process.exit(1);
+});

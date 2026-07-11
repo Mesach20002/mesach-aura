@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs";
+const bcrypt = require("bcryptjs");
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
@@ -32,21 +32,21 @@ export async function resetDevelopmentAuth() {
         username: "admin",
         name: "Admin User",
         role: "ADMIN",
-        password: await hash("password123", 10),
+        password: await bcrypt.hash("password123", 10),
       },
       {
         email: "user@test.com",
         username: "user",
         name: "Test User",
         role: "USER",
-        password: await hash("password123", 10),
+        password: await bcrypt.hash("password123", 10),
       },
       {
         email: "doctor@test.com",
         username: "doctor",
         name: "Doctor User",
         role: "DOCTOR",
-        password: await hash("password123", 10),
+        password: await bcrypt.hash("password123", 10),
       },
     ];
 
