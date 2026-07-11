@@ -1,8 +1,7 @@
 // @ts-nocheck
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { hash } from "bcryptjs";
 
-// Create a singleton Prisma client instance
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 const prisma = globalForPrisma.prisma || new PrismaClient({
@@ -13,13 +12,9 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export async function resetDevelopmentAuth() {
   try {
-    // Delete all sessions
     await prisma.session.deleteMany({});
-
-    // Delete all accounts
     await prisma.account.deleteMany({});
 
-    // Get all users
     const users = await prisma.user.findMany({
       include: {
         accounts: true,
@@ -29,31 +24,29 @@ export async function resetDevelopmentAuth() {
 
     const userIds = users.map((user: { id: string }) => user.id);
 
-    // Delete all users
     await prisma.user.deleteMany({});
 
-    // Create test users
     const testUsers = [
       {
         email: "admin@test.com",
         username: "admin",
         name: "Admin User",
         role: "ADMIN",
-        password: await bcrypt.hash("password123", 10),
+        password: await hash("password123", 10),
       },
       {
         email: "user@test.com",
         username: "user",
         name: "Test User",
         role: "USER",
-        password: await bcrypt.hash("password123", 10),
+        password: await hash("password123", 10),
       },
       {
         email: "doctor@test.com",
         username: "doctor",
         name: "Doctor User",
         role: "DOCTOR",
-        password: await bcrypt.hash("password123", 10),
+        password: await hash("password123", 10),
       },
     ];
 
