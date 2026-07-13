@@ -1,6 +1,7 @@
 import type { SeverityBand, SkinAssessment, SkinConcern } from "@/lib/ai/types"
 import { getProductRecommendations } from "@/lib/recommendations/engine"
 import type { SkinReport } from "@/lib/reports/types"
+import type { ClimateReportContext } from "@/lib/weather/types"
 
 const globalForMockReports = globalThis as unknown as {
   auroraMockReports?: Map<string, SkinReport>
@@ -26,7 +27,8 @@ const recommendationConcernMap: Record<SkinConcern, string[]> = {
 
 export function createSkinReport(
   assessment: SkinAssessment,
-  userId?: string
+  userId?: string,
+  climate?: ClimateReportContext
 ): SkinReport {
   const concerns = Object.keys(assessment.concerns) as SkinConcern[]
   const recommendationConcerns = concerns.flatMap(
@@ -50,17 +52,31 @@ export function createSkinReport(
       skinType: assessment.skinType,
       concerns: recommendationConcerns,
       severityBands,
+      climateTags: getClimateTags(climate),
       maxResults: 4,
     }),
     privacy: {
       imageStored: false,
       imageRetentionConsent: false,
     },
+    climate: climate ?? null,
   }
 
   reports.set(report.id, report)
 
   return report
+}
+
+function getClimateTags(
+  climate: ClimateReportContext | undefined
+): ClimateReportContext["recommendations"][number]["recommendedProductTags"] {
+  return Array.from(
+    new Set(
+      climate?.recommendations.flatMap(
+        (recommendation) => recommendation.recommendedProductTags
+      ) ?? []
+    )
+  )
 }
 
 export function getSkinReportById(id: string): SkinReport | null {

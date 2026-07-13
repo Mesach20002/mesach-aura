@@ -1,23 +1,22 @@
-// @ts-nocheck
-import { resetDevAuth } from "../lib/auth/reset-dev-auth";
+import { resetDevAuth } from "../lib/auth/reset-dev-auth"
 
-async function main() {
-  console.log("Resetting development auth...");
-  const result = await resetDevAuth();
-  
-  if (result.success) {
-    console.log("✓ Development auth reset successfully!");
-    console.log("Created test users:");
-    console.log("  - admin@test.com (password: password123)");
-    console.log("  - user@test.com (password: password123)");
-    console.log("  - doctor@test.com (password: password123)");
-  } else {
-    console.error("✗ Failed to reset development auth:", result.error);
-    process.exit(1);
+async function main(): Promise<void> {
+  console.log("Resetting development auth...")
+  const result = await resetDevAuth()
+
+  if (!result.success) {
+    throw new Error(result.error)
   }
+
+  console.log("✓ Development auth reset successfully!")
+  console.log("Created test users:")
+  console.log("  - admin@test.com (password: password123)")
+  console.log("  - user@test.com (password: password123)")
+  console.log("  - doctor@test.com (password: password123)")
 }
 
-main().catch((error) => {
-  console.error("Script failed:", error);
-  process.exit(1);
-});
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error)
+  console.error("Failed to reset development authentication data:", message)
+  process.exitCode = 1
+})

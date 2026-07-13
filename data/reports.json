@@ -24,16 +24,16 @@
     ],
     "recommendedProducts": [
       {
-        "id": "p-cleanser",
-        "name": "Aurora Gentle Botanical Cleanser"
+        "id": "lavender-foaming-face-wash",
+        "name": "Lavender Foaming Face Wash"
       },
       {
-        "id": "p-serum",
-        "name": "Aurora Turmeric Glow Serum"
+        "id": "radiant-plump-serum",
+        "name": "Radiant Plump Serum"
       },
       {
-        "id": "p-moisturizer",
-        "name": "Aurora Barrier Repair Moisturizer"
+        "id": "radiant-plump-moisturizer-with-glutathione",
+        "name": "Radiant Plump Moisturizer with Glutathione"
       }
     ],
     "exportNote": "Use the Save as PDF button to open the print dialog and export this report. A server-generated PDF can be added later when the PDF package is approved."

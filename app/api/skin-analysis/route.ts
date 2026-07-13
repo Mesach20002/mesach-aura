@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
 
 import { analyzeSkinImage } from "@/lib/ai/adapter"
 import { getCurrentUser } from "@/lib/auth/session"
+import { hasCompletedLatestConsent } from "@/lib/consent/service"
 import { createReportFromAssessment } from "@/lib/reports/service"
 import { storeFile } from "@/lib/storage/storage-service"
+import {
+  verifyWeatherContextToken,
+  WEATHER_CONTEXT_COOKIE,
+} from "@/lib/weather/context"
+import { getClimateRecommendations } from "@/lib/weather/recommendations"
 
 const maxImageSizeBytes = 5 * 1024 * 1024
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"])
@@ -18,6 +25,18 @@ export async function POST(request: Request) {
         { status: 401 }
       )
     }
+
+    if (!(await hasCompletedLatestConsent(user.id))) {
+      return NextResponse.json(
+        { error: "Required consent must be completed before skin analysis." },
+        { status: 403 }
+      )
+    }
+
+    const weatherToken = (await cookies()).get(WEATHER_CONTEXT_COOKIE)?.value
+    const climate = weatherToken
+      ? verifyWeatherContextToken(weatherToken, user.id)
+      : null
 
     const formData = await request.formData()
     const image = formData.get("image")
@@ -46,7 +65,16 @@ export async function POST(request: Request) {
 
     // Phase 1 stores the generated report only, not the uploaded image.
     const assessment = await analyzeSkinImage(image)
-    const report = await createReportFromAssessment(assessment, user.id)
+    const report = await createReportFromAssessment(
+      assessment,
+      user.id,
+      climate
+        ? {
+            snapshot: climate,
+            recommendations: getClimateRecommendations(climate),
+          }
+        : undefined
+    )
     let imageRetentionWarning: string | undefined
 
     if (retainImage) {
@@ -58,7 +86,9 @@ export async function POST(request: Request) {
         })
       } catch {
         if (process.env.NODE_ENV !== "production") {
-          console.warn("Optional image retention skipped: storage backend unavailable.")
+          console.warn(
+            "Optional image retention skipped: storage backend unavailable."
+          )
         }
 
         imageRetentionWarning =

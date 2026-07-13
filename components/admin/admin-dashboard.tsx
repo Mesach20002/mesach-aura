@@ -4,9 +4,9 @@ import { AdminSectionHeader } from "@/components/admin/admin-section-header"
 import { AdminStatsCards } from "@/components/admin/admin-stats-cards"
 import { ConcernsBreakdownTable } from "@/components/admin/concerns-breakdown-table"
 import {
-  adminStats,
   concernsBreakdown,
-  productRecommendations,
+  getAdminStats,
+  getProductRecommendationMetrics,
   recentScans,
 } from "@/components/admin/mock-admin-data"
 import { RecentScansTable } from "@/components/admin/recent-scans-table"
@@ -14,14 +14,18 @@ import { RecommendationsTable } from "@/components/admin/recommendations-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import type { AdminAnalytics } from "@/lib/admin/types"
 
-export function AdminDashboard() {
+export function AdminDashboard({ analytics }: { analytics: AdminAnalytics }) {
+  const adminStats = getAdminStats(analytics)
+  const productRecommendations = getProductRecommendationMetrics(analytics)
+
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-      <header className="rounded-lg border border-border bg-card p-6 shadow-sm">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+    <div className="max-w-7xl gap-8 mx-auto flex w-full flex-col">
+      <header className="rounded-lg border-border bg-card p-6 shadow-sm border">
+        <div className="gap-5 lg:flex-row lg:items-start lg:justify-between flex flex-col">
           <div className="space-y-4">
-            <Badge className="rounded-lg border border-border bg-background px-3 py-1 text-muted-foreground">
+            <Badge className="rounded-lg border-border bg-background px-3 py-1 text-muted-foreground border">
               Enterprise operations
             </Badge>
             <div className="space-y-2">
@@ -43,8 +47,8 @@ export function AdminDashboard() {
 
       <AdminStatsCards stats={adminStats} />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.75fr)]">
-        <Card className="rounded-lg border border-border shadow-sm">
+      <section className="gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.75fr)] grid">
+        <Card className="rounded-lg border-border shadow-sm border">
           <CardHeader>
             <AdminSectionHeader
               title="Recent Skin Scans"
@@ -56,7 +60,7 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border border-border shadow-sm">
+        <Card className="rounded-lg border-border shadow-sm border">
           <CardHeader>
             <AdminSectionHeader
               title="Skin Concerns Breakdown"
@@ -69,7 +73,7 @@ export function AdminDashboard() {
         </Card>
       </section>
 
-      <Card className="rounded-lg border border-border shadow-sm">
+      <Card className="rounded-lg border-border shadow-sm border">
         <CardHeader>
           <AdminSectionHeader
             title="Product Recommendations"
@@ -81,7 +85,7 @@ export function AdminDashboard() {
         </CardContent>
       </Card>
 
-      <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-5 text-xs leading-5 text-muted-foreground shadow-sm">
+      <div className="gap-3 rounded-lg border-border bg-card p-5 text-xs leading-5 text-muted-foreground shadow-sm flex items-start border">
         <IconShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden />
         <p>
           Aurora SkinSense provides cosmetic and wellness guidance only and is

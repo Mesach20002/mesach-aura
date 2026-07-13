@@ -10,17 +10,15 @@ import {
 } from "@tabler/icons-react"
 
 import { CameraCapture } from "@/components/scan/camera-capture"
-import { ConsentCard } from "@/components/scan/consent-card"
 import { ImagePreview } from "@/components/scan/image-preview"
 import { ImageUpload } from "@/components/scan/image-upload"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-type ScanStep = "consent" | "capture" | "preview" | "analyzing" | "error"
+type ScanStep = "capture" | "preview" | "analyzing" | "error"
 
 const stepLabels: Record<ScanStep, string> = {
-  consent: "Consent",
   capture: "Capture",
   preview: "Preview",
   analyzing: "Analyzing",
@@ -29,7 +27,7 @@ const stepLabels: Record<ScanStep, string> = {
 
 export function ScanFlow() {
   const router = useRouter()
-  const [step, setStep] = useState<ScanStep>("consent")
+  const [step, setStep] = useState<ScanStep>("capture")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
@@ -117,8 +115,8 @@ export function ScanFlow() {
               Start your cosmetic skin assessment
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Consent, capture or upload, preview, and generate a report from
-              one clean page.
+              Capture or upload, preview, and generate a cosmetic report from
+              one clean page. Your required consent is already on file.
             </p>
           </div>
         </div>
@@ -134,46 +132,33 @@ export function ScanFlow() {
         </div>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-4" aria-label="Scan progress">
-        {(["consent", "capture", "preview", "analyzing"] as const).map(
-          (item, index) => {
-            const steps = [
-              "consent",
-              "capture",
-              "preview",
-              "analyzing",
-            ] as const
-            const currentIndex = steps.indexOf(step as (typeof steps)[number])
-            const isComplete = currentIndex > index
-            const isActive = step === item
+      <div className="grid gap-3 sm:grid-cols-3" aria-label="Scan progress">
+        {(["capture", "preview", "analyzing"] as const).map((item, index) => {
+          const steps = ["capture", "preview", "analyzing"] as const
+          const currentIndex = steps.indexOf(step as (typeof steps)[number])
+          const isComplete = currentIndex > index
+          const isActive = step === item
 
-            return (
-              <div
-                key={item}
-                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-sm"
-                data-active={isActive}
-              >
-                <span className="flex size-7 items-center justify-center rounded-lg border border-border bg-background text-xs font-semibold text-muted-foreground">
-                  {isComplete ? (
-                    <IconCheck className="size-4" aria-hidden />
-                  ) : (
-                    index + 1
-                  )}
-                </span>
-                <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-                  {stepLabels[item]}
-                </p>
-              </div>
-            )
-          }
-        )}
+          return (
+            <div
+              key={item}
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-sm"
+              data-active={isActive}
+            >
+              <span className="flex size-7 items-center justify-center rounded-lg border border-border bg-background text-xs font-semibold text-muted-foreground">
+                {isComplete ? (
+                  <IconCheck className="size-4" aria-hidden />
+                ) : (
+                  index + 1
+                )}
+              </span>
+              <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                {stepLabels[item]}
+              </p>
+            </div>
+          )
+        })}
       </div>
-
-      {step === "consent" ? (
-        <div className="mx-auto w-full max-w-3xl">
-          <ConsentCard onContinue={() => setStep("capture")} />
-        </div>
-      ) : null}
 
       {step === "capture" ? (
         <div className="grid gap-4 lg:grid-cols-2">
@@ -240,7 +225,7 @@ export function ScanFlow() {
                   setPreviewUrl("")
                   setErrorMessage("")
                   setIsAnalyzing(false)
-                  setStep("consent")
+                  setStep("capture")
                 }}
               >
                 Start Scan

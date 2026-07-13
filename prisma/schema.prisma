@@ -44,6 +44,7 @@ model User {
   sessions        Session[]
   accounts        Account[]
   reports         SkinReport[]
+  skinProfile     SkinProfile?
   consentRecords  ConsentRecord[]
   auditLogs       AuditLog[]
   createdAt       DateTime        @default(now())
@@ -103,6 +104,7 @@ model SkinReport {
   guidance        Json
   disclaimer      String                  @db.Text
   assessment      SkinAssessment?
+  climateSnapshot ClimateSnapshot?
   recommendations ProductRecommendation[]
   consentRecords  ConsentRecord[]
   scanEvents      ScanEvent[]
@@ -111,6 +113,33 @@ model SkinReport {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+model ClimateSnapshot {
+  id                 String     @id @default(cuid())
+  reportId           String     @unique
+  report             SkinReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  locationName       String?
+  country            String?
+  latitudeRounded    Float?
+  longitudeRounded   Float?
+  temperatureCelsius Float
+  feelsLikeCelsius   Float?
+  humidityPercent    Int
+  pressureHpa        Int?
+  windSpeedMps       Float?
+  cloudCoverPercent  Int?
+  visibilityMeters   Int?
+  condition          String?
+  description        String?
+  uvIndex            Float?
+  pm25               Float?
+  pm10               Float?
+  airQualityIndex    Int?
+  provider           String     @default("openweather")
+  recommendations    Json
+  observedAt         DateTime
+  createdAt          DateTime   @default(now())
 }
 
 model SkinAssessment {
@@ -151,9 +180,30 @@ model ConsentRecord {
   reportId    String?
   report      SkinReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
   consentType String
+  version     String      @default("legacy")
   accepted    Boolean
   acceptedAt  DateTime
   createdAt   DateTime    @default(now())
+
+  @@index([userId, consentType, version])
+}
+
+model SkinProfile {
+  id                       String   @id @default(cuid())
+  userId                   String   @unique
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredName            String
+  ageRange                 String
+  genderIdentity           String?
+  country                  String?
+  selfReportedSkinType     String
+  skinConcerns             Json
+  skinSensitivity          String
+  routineConsistency       String
+  allergiesOrSensitivities String?  @db.Text
+  primarySkinGoal          String?  @db.Text
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 }
 
 model ScanEvent {

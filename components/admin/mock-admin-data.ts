@@ -1,45 +1,64 @@
 import type {
   AdminStat,
+  AdminAnalytics,
   ConcernBreakdown,
   ProductRecommendationMetric,
   RecentScan,
 } from "@/lib/admin/types"
-import { auroraProducts } from "@/lib/recommendations/products"
+import {
+  auroraProductCatalog,
+  getAuroraProductById,
+} from "@/lib/products/catalog"
 
-const productById = new Map(
-  auroraProducts.map((product) => [product.id, product.name])
-)
+function getProductName(id: string): string {
+  const product = getAuroraProductById(id)
 
-export const adminStats: AdminStat[] = [
-  {
-    label: "Total Scans",
-    value: "8,420",
-    helper: "Cosmetic assessments submitted",
-    trend: "+12% this week",
-    iconName: "scans",
-  },
-  {
-    label: "Reports Generated",
-    value: "7,890",
-    helper: "Shareable wellness reports",
-    trend: "+9% this week",
-    iconName: "reports",
-  },
-  {
-    label: "Product Recommendations",
-    value: "18,340",
-    helper: "Aurora product matches shown",
-    trend: "+15% this week",
-    iconName: "recommendations",
-  },
-  {
-    label: "Conversion Intent",
-    value: "High",
-    helper: "Based on saved recommendations",
-    trend: "Stable this week",
-    iconName: "conversionIntent",
-  },
-]
+  if (!product) {
+    throw new Error(`Unknown Aurora Organics product: ${id}`)
+  }
+
+  return product.name
+}
+
+export function getAdminStats(analytics: AdminAnalytics): AdminStat[] {
+  return [
+    {
+      label: "Aurora Products",
+      value: auroraProductCatalog.length.toLocaleString(),
+      helper: "Products in the official catalogue",
+      trend: "Catalogue source of truth",
+      iconName: "products",
+    },
+    {
+      label: "Total Scans",
+      value: analytics.totalScans.toLocaleString(),
+      helper: "Cosmetic assessments submitted",
+      trend: "Saved report activity",
+      iconName: "scans",
+    },
+    {
+      label: "Reports Generated",
+      value: analytics.reportsGenerated.toLocaleString(),
+      helper: "Shareable wellness reports",
+      trend: "Saved report activity",
+      iconName: "reports",
+    },
+    {
+      label: "Product Recommendations",
+      value: analytics.productRecommendations.toLocaleString(),
+      helper: "Official Aurora product matches shown",
+      trend: "Across saved reports",
+      iconName: "recommendations",
+    },
+    {
+      label: "Recommendation Success",
+      value: analytics.conversionIntent,
+      helper: "Requires product click or purchase events",
+      trend: "No invented conversion data",
+      iconName: "conversionIntent",
+    },
+  ]
+}
 
 export const recentScans: RecentScan[] = [
   {
@@ -84,45 +103,28 @@ export const recentScans: RecentScan[] = [
   },
 ]
 
-export const productRecommendations: ProductRecommendationMetric[] = [
-  {
-    id: "radiant-plump-moisturizer-with-glutathione",
-    productName:
-      productById.get("radiant-plump-moisturizer-with-glutathione") ??
-      "Radiant Plump Moisturizer with Glutathione",
-    matchedConcern: "Uneven tone",
-    recommendationCount: 3240,
-    conversionIntent: "High",
-    lastRecommended: "Jul 7, 2026",
-  },
-  {
-    id: "niacinamide-neem-toner",
-    productName:
-      productById.get("niacinamide-neem-toner") ?? "Niacinamide & NEEM Toner",
-    matchedConcern: "Clogged pores",
-    recommendationCount: 2810,
-    conversionIntent: "Moderate",
-    lastRecommended: "Jul 7, 2026",
-  },
-  {
-    id: "botanical-repair-mist",
-    productName:
-      productById.get("botanical-repair-mist") ?? "Botanical Repair Mist",
-    matchedConcern: "Dryness",
-    recommendationCount: 2565,
-    conversionIntent: "High",
-    lastRecommended: "Jul 6, 2026",
-  },
-  {
-    id: "radiant-rose-face-mist",
-    productName:
-      productById.get("radiant-rose-face-mist") ?? "Radiant Rose Face Mist",
-    matchedConcern: "Dullness",
-    recommendationCount: 2198,
-    conversionIntent: "Moderate",
-    lastRecommended: "Jul 6, 2026",
-  },
-]
+export function getProductRecommendationMetrics(
+  analytics: AdminAnalytics
+): ProductRecommendationMetric[] {
+  return analytics.topRecommendedProducts.flatMap((metric) => {
+    const product = auroraProductCatalog.find(
+      (item) => item.name === metric.productName
+    )
+
+    if (!product) return []
+
+    return [
+      {
+        id: product.id,
+        productName: getProductName(product.id),
+        matchedConcern: "Across saved reports",
+        recommendationCount: metric.count,
+        conversionIntent: analytics.conversionIntent,
+        lastRecommended: "Recent report activity",
+      },
+    ]
+  })
+}
 
 export const concernsBreakdown: ConcernBreakdown[] = [
   {

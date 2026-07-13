@@ -1,0 +1,11 @@
+{
+  "recommendations": ["bradlc.vscode-tailwindcss"],
+  "unwantedRecommendations": [
+    "lololegeek.live-server-speed-edition",
+    "ms-vscode.live-server",
+    "negokaz.live-server-preview",
+    "ritwickdey.liveserver",
+    "searking.preview-vscode",
+    "yandeu.five-server"
+  ]
+}

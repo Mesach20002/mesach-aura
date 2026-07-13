@@ -31,7 +31,7 @@ const trustItems = [
 export function SecuritySection() {
   return (
     <section id="features" className="border-b border-border bg-primary/10">
-      <div className="mx-auto grid max-w-7xl gap-0 px-6 py-8 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-0 px-4 py-8 sm:px-6 md:grid-cols-4 lg:px-8">
         {trustItems.map((item) => {
           const TrustIcon = item.icon
 

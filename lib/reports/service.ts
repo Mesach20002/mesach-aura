@@ -1,4 +1,5 @@
 import type { SkinAssessment } from "@/lib/ai/types"
+import type { ClimateReportContext } from "@/lib/weather/types"
 import {
   createReportRecord,
   deleteReportRecord,
@@ -8,9 +9,10 @@ import {
 
 export function createReportFromAssessment(
   assessment: SkinAssessment,
-  userId?: string
+  userId?: string,
+  climate?: ClimateReportContext
 ) {
-  return createReportRecord(assessment, userId)
+  return createReportRecord(assessment, userId, climate)
 }
 
 export function getReport(id: string) {

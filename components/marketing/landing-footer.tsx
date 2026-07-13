@@ -13,20 +13,32 @@ import { Input } from "@/components/ui/input"
 const footerGroups = [
   {
     title: "Quick Links",
-    links: ["How It Works", "Products", "Skin Analysis", "Blog", "Contact Us"],
+    links: [
+      { label: "How It Works", href: "/#how-it-works" },
+      { label: "Products", href: "/#products" },
+      { label: "Skin Analysis", href: "/scan" },
+      { label: "Blog", href: "/#blog" },
+      { label: "Contact Us", href: "/#about" },
+    ],
   },
   {
     title: "Company",
-    links: ["About Us", "Careers", "Press", "Affiliates", "Reviews"],
+    links: [
+      { label: "About Us", href: "/#about" },
+      { label: "Careers", href: "/#about" },
+      { label: "Press", href: "/#about" },
+      { label: "Affiliates", href: "/#about" },
+      { label: "Reviews", href: "/#products" },
+    ],
   },
   {
     title: "Support",
     links: [
-      "Help Center",
-      "Privacy Policy",
-      "Terms of Service",
-      "Refund Policy",
-      "Contact",
+      { label: "Help Center", href: "/#about" },
+      { label: "Privacy Policy", href: "/#about" },
+      { label: "Terms of Service", href: "/#about" },
+      { label: "Refund Policy", href: "/#about" },
+      { label: "Contact", href: "/#about" },
     ],
   },
 ] as const
@@ -41,7 +53,7 @@ const socialIcons = [
 export function LandingFooter() {
   return (
     <footer id="about" className="bg-background">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-[1.2fr_2fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.2fr_2fr_1fr] lg:px-8">
         <div>
           <Link href="/" className="inline-flex items-center gap-3">
             <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-display text-2xl font-semibold text-primary shadow-sm">
@@ -79,9 +91,12 @@ export function LandingFooter() {
               </h3>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                 {group.links.map((link) => (
-                  <li key={link}>
-                    <Link href="/" className="hover:text-primary">
-                      {link}
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="transition-colors hover:text-primary"
+                    >
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -106,7 +121,7 @@ export function LandingFooter() {
         </div>
       </div>
       <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
-        (c) 2025 Aurora SkinSense. All rights reserved.
+        &copy; 2026 Aurora SkinSense. All rights reserved.
       </div>
     </footer>
   )

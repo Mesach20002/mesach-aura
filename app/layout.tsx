@@ -4,18 +4,18 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
-const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" })
+const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-roboto" })
 
 const cormorantDisplay = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-cormorant",
 })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-geist-mono",
 })
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "antialiased font-sans",
+        "font-sans antialiased",
         inter.variable,
         robotoHeading.variable,
         cormorantDisplay.variable,

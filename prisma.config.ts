@@ -1,4 +1,9 @@
+import { existsSync } from "node:fs"
 import { defineConfig } from "prisma/config"
+
+if (existsSync(".env")) {
+  process.loadEnvFile()
+}
 
 const databaseUrl =
   process.env.DATABASE_URL ??

@@ -16,14 +16,14 @@ export function RecommendationsTable({
   recommendations,
 }: RecommendationsTableProps) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
+    <div className="rounded-lg border-border overflow-hidden border">
       <Table>
         <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead>Product</TableHead>
             <TableHead>Matched Concern</TableHead>
             <TableHead className="text-right">Recommendation Count</TableHead>
-            <TableHead>Conversion Intent</TableHead>
+            <TableHead>Success Signal</TableHead>
             <TableHead>Last Recommended</TableHead>
           </TableRow>
         </TableHeader>
@@ -49,7 +49,7 @@ export function RecommendationsTable({
             <TableRow>
               <TableCell
                 colSpan={5}
-                className="h-24 text-center text-muted-foreground"
+                className="h-24 text-muted-foreground text-center"
               >
                 No recommendation metrics to show.
               </TableCell>
@@ -57,7 +57,7 @@ export function RecommendationsTable({
           ) : null}
         </TableBody>
       </Table>
-      <p className="border-t border-border bg-card px-4 py-3 text-xs leading-5 text-muted-foreground">
+      <p className="border-border bg-card px-4 py-3 text-xs leading-5 text-muted-foreground border-t">
         Recommendations are cosmetic and wellness suggestions only for routine
         self-care context.
       </p>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 export function FinalCta() {
   return (
     <section className="bg-primary/70">
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-[180px_1fr_auto] md:items-center">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[180px_1fr_auto] md:items-center lg:px-8">
         <div className="relative hidden aspect-[4/3] overflow-hidden rounded-lg md:block">
           <Image
             src="/images/landing/skincare-products-lineup.png"
@@ -26,7 +26,7 @@ export function FinalCta() {
           </p>
         </div>
         <Button asChild size="lg" variant="secondary" data-icon="inline-end">
-          <Link href="/login?redirect=/scan">
+          <Link href="/scan">
             Start Your Skin Scan
             <IconArrowRight className="size-4" aria-hidden />
           </Link>

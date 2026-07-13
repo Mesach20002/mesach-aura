@@ -1,10 +1,7 @@
 import type { SkinReport } from "@/lib/reports/types"
 
 export type AdminStatIconName =
-  | "scans"
-  | "reports"
-  | "recommendations"
-  | "conversionIntent"
+  "scans" | "reports" | "recommendations" | "products" | "conversionIntent"
 
 export interface AdminStat {
   label: string

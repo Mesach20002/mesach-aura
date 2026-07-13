@@ -1,140 +1,96 @@
-import Image from "next/image"
-import Link from "next/link"
 import {
   IconArrowRight,
-  IconHeart,
   IconLock,
-  IconRosetteDiscountCheck,
-  IconShieldCheck,
   IconSparkles,
   IconUserScan,
 } from "@tabler/icons-react"
+import Image from "next/image"
+import Link from "next/link"
 
+import { HeroFeatureItem } from "@/components/marketing/hero-feature-item"
+import { SkinScoreCard } from "@/components/marketing/skin-score-card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-const trustItems = [
+const features = [
   { label: "AI-Powered Analysis", icon: IconSparkles },
   { label: "Personalized Recommendations", icon: IconUserScan },
-  { label: "100% Secure & Private", icon: IconShieldCheck },
-] as const
-
-const concernCards = [
-  { label: "Pores", band: "High" },
-  { label: "Hydration", band: "Moderate" },
-  { label: "Redness", band: "Low" },
+  { label: "Secure & Private", icon: IconLock },
 ] as const
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden border-b border-border bg-primary/5">
-      <div className="mx-auto grid min-h-[640px] max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-0">
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-6">
-            <h1 className="max-w-3xl font-display text-5xl leading-tight font-semibold text-foreground md:text-7xl">
-              Discover Your Best Skin with{" "}
-              <span className="text-primary">AI-Powered Insights</span>
-            </h1>
-            <p className="max-w-xl text-lg leading-8 text-foreground/80">
-              Upload a selfie, get a personalized cosmetic skin analysis, and
-              discover the right Aurora products for healthy, radiant skin.
-            </p>
+    <section className="overflow-hidden bg-gradient-to-b from-accent/45 via-background to-background">
+      <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-16 lg:px-8 lg:py-20 xl:py-24">
+        <div className="min-w-0">
+          <Badge className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-primary">
+            <IconSparkles className="size-3.5" aria-hidden />
+            AI-Powered Skin Intelligence
+          </Badge>
+
+          <h1 className="mt-6 max-w-2xl font-display text-4xl leading-[1.05] font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
+            Discover Your Best Skin with{" "}
+            <span className="text-primary">AI-Powered Insights</span>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+            Upload a selfie, receive a personalized cosmetic skin analysis, and
+            discover suitable Aurora products for healthier, radiant-looking
+            skin.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+            {features.map((feature) => (
+              <HeroFeatureItem key={feature.label} {...feature} />
+            ))}
           </div>
 
-          <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
-            {trustItems.map((item) => {
-              const TrustIcon = item.icon
-
-              return (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-3 text-sm text-foreground"
-                >
-                  <TrustIcon className="size-5 text-primary" aria-hidden />
-                  <span>{item.label}</span>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" data-icon="inline-end" className="px-8">
-              <Link href="/login?redirect=/scan">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Button
+              asChild
+              size="lg"
+              data-icon="inline-end"
+              className="h-12 w-full rounded-lg px-6 shadow-sm sm:w-auto"
+            >
+              <Link href="/scan">
                 Start Your Skin Scan
                 <IconArrowRight className="size-4" aria-hidden />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="#how-it-works">
-                Learn How It Works
-                <span className="ml-2 flex size-6 items-center justify-center rounded-full border border-primary text-primary">
-                  <IconArrowRight className="size-3" aria-hidden />
-                </span>
-              </Link>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 w-full rounded-lg border-primary/25 bg-background/70 px-6 sm:w-auto"
+            >
+              <Link href="/#how-it-works">Learn How It Works</Link>
             </Button>
           </div>
+
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
+            Cosmetic wellness guidance only. Not a medical diagnosis.
+          </p>
         </div>
 
-        <div className="relative min-h-[520px] overflow-hidden rounded-lg lg:rounded-none">
-          <Image
-            src="/images/landing/hero-skin-portrait.png"
-            alt="Aurora SkinSense beauty portrait"
-            fill
-            priority
-            sizes="(min-width: 1024px) 55vw, 100vw"
-            className="object-cover object-center"
-          />
+        <div className="relative min-w-0">
+          <div className="relative aspect-[4/5] min-h-[440px] overflow-hidden rounded-3xl bg-muted shadow-xl sm:min-h-[520px] lg:min-h-[560px]">
+            <Image
+              src="/images/landing/hero-skin-portrait.png"
+              alt="Person with radiant-looking skin using Aurora SkinSense"
+              fill
+              priority
+              sizes="(min-width: 1280px) 560px, (min-width: 1024px) 46vw, 100vw"
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-foreground/35 to-transparent" />
 
-          <div className="absolute top-12 right-4 rounded-lg border border-border bg-background/95 p-5 shadow-lg backdrop-blur">
-            <p className="text-sm font-medium text-foreground">
-              Your Skin Score
-            </p>
-            <div className="mt-4 flex size-28 items-center justify-center rounded-full border-8 border-primary/30">
-              <div className="text-center">
-                <p className="font-heading text-3xl font-semibold text-foreground">
-                  82
-                </p>
-                <p className="text-xs text-muted-foreground">/100</p>
-              </div>
-            </div>
-            <p className="mt-4 flex items-center gap-2 text-sm text-foreground">
-              <IconRosetteDiscountCheck
-                className="size-4 text-primary"
-                aria-hidden
-              />
-              Healthy Glow
-            </p>
-          </div>
-
-          <div className="absolute right-0 bottom-10 w-56 rounded-lg border border-border bg-background/95 p-5 shadow-lg backdrop-blur">
-            <p className="text-sm font-medium text-foreground">Skin Concerns</p>
-            <div className="mt-4 space-y-3">
-              {concernCards.map((concern) => (
-                <div
-                  key={concern.label}
-                  className="flex items-center justify-between gap-4"
-                >
-                  <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <IconHeart className="size-4 text-primary" aria-hidden />
-                    {concern.label}
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="rounded-full bg-primary/10 px-2 py-1 text-primary"
-                  >
-                    {concern.band}
-                  </Badge>
-                </div>
-              ))}
+            <div className="absolute right-4 bottom-4 left-4 sm:right-6 sm:bottom-6 sm:left-auto">
+              <SkinScoreCard />
             </div>
           </div>
 
-          <div className="absolute top-1/2 left-8 hidden size-72 -translate-y-1/2 rounded-full border border-primary/20 lg:block" />
-          <div className="absolute bottom-8 left-8 hidden size-3 rounded-full bg-background shadow-lg lg:block" />
-          <IconLock
-            className="absolute bottom-8 left-14 hidden size-4 text-primary lg:block"
-            aria-hidden
-          />
+          <div className="absolute -top-4 -right-4 -z-10 size-32 rounded-full bg-primary/10 blur-2xl sm:size-48" />
+          <div className="absolute -bottom-5 -left-5 -z-10 size-36 rounded-full bg-accent blur-2xl sm:size-52" />
         </div>
       </div>
     </section>

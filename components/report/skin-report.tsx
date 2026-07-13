@@ -6,6 +6,7 @@ import {
 import Link from "next/link"
 
 import { ConcernBandCard } from "@/components/report/concern-band-card"
+import { ClimateContextCard } from "@/components/report/climate-context-card"
 import { DownloadReportButton } from "@/components/report/download-report-button"
 import { ProductRecommendations } from "@/components/report/product-recommendations"
 import { ReportAiChat } from "@/components/report/report-ai-chat"
@@ -85,6 +86,10 @@ export function SkinReport({ report }: SkinReportProps) {
               summary={report.assessment.summary}
             />
           </section>
+
+          {report.climate ? (
+            <ClimateContextCard climate={report.climate} />
+          ) : null}
 
           <section aria-labelledby="skin-bands-heading" className="space-y-4">
             <div className="space-y-2">

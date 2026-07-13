@@ -16,16 +16,19 @@ export async function LandingNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="inline-flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-display text-2xl font-semibold text-primary shadow-sm">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:min-h-20 sm:px-6 lg:px-8">
+        <Link
+          href="/"
+          className="inline-flex shrink-0 items-center gap-2 sm:gap-3"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-display text-xl font-semibold text-primary shadow-sm sm:size-11 sm:text-2xl">
             A
           </span>
           <span>
-            <span className="block font-display text-2xl leading-5 font-semibold tracking-widest text-foreground uppercase">
+            <span className="block font-display text-lg leading-5 font-semibold tracking-widest text-foreground uppercase sm:text-2xl">
               Aurora
             </span>
-            <span className="block text-xs tracking-[0.45em] text-muted-foreground uppercase">
+            <span className="hidden text-xs tracking-[0.45em] text-muted-foreground uppercase sm:block">
               Skinsense
             </span>
           </span>
@@ -44,7 +47,7 @@ export async function LandingNav() {
         </nav>
 
         {user ? (
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
               asChild
               size="lg"
@@ -61,17 +64,22 @@ export async function LandingNav() {
             >
               <Link href="/reports">Reports</Link>
             </Button>
-            <Button asChild size="lg">
+            <Button asChild size="sm" className="sm:h-10 sm:px-4">
               <Link href="/scan">Scan</Link>
             </Button>
             <form action="/api/auth/logout" method="post">
-              <Button type="submit" size="lg" variant="outline">
+              <Button
+                type="submit"
+                size="sm"
+                variant="outline"
+                className="hidden sm:inline-flex"
+              >
                 Logout
               </Button>
             </form>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
               asChild
               size="lg"
@@ -80,11 +88,16 @@ export async function LandingNav() {
             >
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="hidden md:inline-flex"
+            >
               <Link href="/register">Register</Link>
             </Button>
-            <Button asChild size="lg">
-              <Link href="/login?redirect=/scan">Get Started</Link>
+            <Button asChild size="sm" className="sm:h-10 sm:px-4">
+              <Link href="/scan">Get Started</Link>
             </Button>
           </div>
         )}

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 
 import { AdminDashboard } from "@/components/admin/admin-dashboard"
+import { getAdminAnalytics } from "@/lib/admin/analytics-service"
 import { getCurrentUser } from "@/lib/auth/session"
 
 export default async function AdminPage() {
@@ -14,5 +15,7 @@ export default async function AdminPage() {
     redirect("/dashboard")
   }
 
-  return <AdminDashboard />
+  const analytics = await getAdminAnalytics()
+
+  return <AdminDashboard analytics={analytics} />
 }

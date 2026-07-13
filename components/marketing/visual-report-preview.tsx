@@ -2,48 +2,34 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { recommendationEligibleProducts } from "@/lib/products/catalog"
 
 const tabs = [
   "All",
   "Cleansers",
   "Moisturizers",
   "Serums",
-  "Sunscreens",
-  "Body Care",
+  "Face Mists",
+  "Lip Care",
 ]
 
-const products = [
-  {
-    name: "Radiance Gentle Cleanser",
-    price: "PKR 1,890",
-    rating: "(128)",
-  },
-  {
-    name: "Hydra Glow Moisturizer",
-    price: "PKR 2,250",
-    rating: "(96)",
-  },
-  {
-    name: "Glow Vitamin C Serum",
-    price: "PKR 2,890",
-    rating: "(176)",
-  },
-  {
-    name: "Daily UV Defense SPF 50+",
-    price: "PKR 2,150",
-    rating: "(210)",
-  },
-  {
-    name: "Night Repair Cream",
-    price: "PKR 2,490",
-    rating: "(143)",
-  },
+const featuredProductIds = [
+  "lavender-foaming-face-wash",
+  "radiant-plump-moisturizer-with-glutathione",
+  "gold-serum",
+  "niacinamide-neem-toner",
+  "radiant-rose-face-mist",
 ] as const
+
+const products = featuredProductIds.flatMap((id) => {
+  const product = recommendationEligibleProducts.find((item) => item.id === id)
+  return product ? [product] : []
+})
 
 export function VisualReportPreview() {
   return (
     <section id="products" className="border-b border-border bg-primary/5">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="text-center">
           <p className="text-xs font-semibold tracking-widest text-primary uppercase">
             Skincare That Cares
@@ -55,44 +41,42 @@ export function VisualReportPreview() {
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {tabs.map((tab, index) => (
-            <button
+            <span
               key={tab}
-              type="button"
-              className="rounded-lg border border-border bg-card px-6 py-2 text-sm text-foreground shadow-sm data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm text-foreground shadow-sm data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground sm:px-6"
               data-active={index === 0}
             >
               {tab}
-            </button>
+            </span>
           ))}
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {products.map((product) => (
             <article
               key={product.name}
-              className="overflow-hidden rounded-lg border border-border bg-card shadow-sm"
+              className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-background">
-                <Image
-                  src="/images/landing/skincare-products-lineup.png"
-                  alt={product.name}
-                  fill
-                  sizes="(min-width: 1024px) 20vw, 50vw"
-                  className="object-cover"
-                />
-              </div>
+              {product.image ? (
+                <div className="relative aspect-[4/3] overflow-hidden bg-background">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(min-width: 1024px) 20vw, 50vw"
+                    className="object-cover"
+                  />
+                </div>
+              ) : null}
               <div className="space-y-2 p-4">
                 <h3 className="font-heading text-base font-semibold text-foreground">
                   {product.name}
                 </h3>
                 <p className="text-sm font-medium text-foreground">
-                  {product.price}
+                  {product.price ?? "Price not listed"}
                 </p>
-                <p className="text-sm text-primary">
-                  ★★★★★{" "}
-                  <span className="text-xs text-muted-foreground">
-                    {product.rating}
-                  </span>
+                <p className="text-xs text-muted-foreground capitalize">
+                  {product.category.replaceAll("-", " ")}
                 </p>
               </div>
             </article>
@@ -101,7 +85,7 @@ export function VisualReportPreview() {
 
         <div className="mt-8 text-center">
           <Button asChild size="lg">
-            <Link href="/login?redirect=/scan">View All Products</Link>
+            <Link href="/scan">Get Your Recommendations</Link>
           </Button>
         </div>
       </div>

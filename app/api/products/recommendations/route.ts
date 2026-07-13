@@ -27,6 +27,7 @@ const severityBands: SeverityBand[] = ["low", "moderate", "high"]
 interface RecommendationRequestBody {
   skinType: SkinType
   concerns: Record<SkinConcern, SeverityBand>
+  confidenceBands?: Partial<Record<SkinConcern, SeverityBand>>
   maxResults?: number
 }
 
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
     skinType: body.skinType,
     concerns: Object.keys(body.concerns),
     severityBands: body.concerns,
+    confidenceBands: body.confidenceBands,
     maxResults: body.maxResults,
   })
 
@@ -77,8 +79,23 @@ function isRecommendationRequestBody(
 
   if (!concernsAreValid) return false
 
+  if (
+    candidate.confidenceBands !== undefined &&
+    (!candidate.confidenceBands ||
+      typeof candidate.confidenceBands !== "object" ||
+      !Object.entries(candidate.confidenceBands).every(
+        ([concern, band]) =>
+          skinConcerns.includes(concern as SkinConcern) &&
+          severityBands.includes(band as SeverityBand)
+      ))
+  ) {
+    return false
+  }
+
   return (
     candidate.maxResults === undefined ||
-    (Number.isInteger(candidate.maxResults) && candidate.maxResults > 0)
+    (Number.isInteger(candidate.maxResults) &&
+      candidate.maxResults >= 3 &&
+      candidate.maxResults <= 6)
   )
 }

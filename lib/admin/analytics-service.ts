@@ -21,7 +21,9 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
   const productCounts = new Map<string, number>()
 
   for (const report of recentReports) {
-    for (const concern of Object.keys(report.assessment.concerns) as SkinConcern[]) {
+    for (const concern of Object.keys(
+      report.assessment.concerns
+    ) as SkinConcern[]) {
       concernCounts.set(concern, (concernCounts.get(concern) ?? 0) + 1)
     }
 
@@ -38,7 +40,7 @@ export async function getAdminAnalytics(): Promise<AdminAnalytics> {
       (total, report) => total + report.recommendations.length,
       0
     ),
-    conversionIntent: recentReports.length > 0 ? "Early signal" : "No signal yet",
+    conversionIntent: "Not tracked",
     recentReports,
     topConcerns: Array.from(concernCounts.entries())
       .map(([concern, count]) => ({ concern: concernLabels[concern], count }))

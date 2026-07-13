@@ -1,6 +1,7 @@
 import {
   IconChartArcs,
   IconFileAnalytics,
+  IconPackage,
   IconSparkles,
   IconTargetArrow,
   type Icon,
@@ -13,6 +14,7 @@ const statIcons: Record<AdminStatIconName, Icon> = {
   scans: IconChartArcs,
   reports: IconFileAnalytics,
   recommendations: IconSparkles,
+  products: IconPackage,
   conversionIntent: IconTargetArrow,
 }
 
@@ -23,7 +25,7 @@ interface AdminStatsCardsProps {
 export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
   return (
     <section
-      className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+      className="gap-4 md:grid-cols-2 xl:grid-cols-5 grid"
       aria-label="Admin dashboard metrics"
     >
       {stats.map((stat) => {
@@ -32,14 +34,14 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
         return (
           <Card
             key={stat.label}
-            className="rounded-lg border border-border shadow-sm"
+            className="rounded-lg border-border shadow-sm border"
           >
             <CardHeader className="gap-3">
-              <div className="flex items-start justify-between gap-4">
+              <div className="gap-4 flex items-start justify-between">
                 <CardTitle className="text-xs text-muted-foreground">
                   {stat.label}
                 </CardTitle>
-                <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground shadow-sm">
+                <span className="size-10 rounded-lg border-border bg-background text-muted-foreground shadow-sm flex items-center justify-center border">
                   <StatIcon className="size-4" aria-hidden />
                 </span>
               </div>

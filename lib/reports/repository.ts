@@ -7,11 +7,9 @@ import {
 import type { SeverityBand, SkinAssessment, SkinConcern } from "@/lib/ai/types"
 import { getPrismaClient, isPrismaAvailable } from "@/lib/db/client"
 import { getProductRecommendations } from "@/lib/recommendations/engine"
-import { auroraProducts } from "@/lib/recommendations/products"
-import type {
-  AuroraProduct,
-  ProductRecommendation,
-} from "@/lib/recommendations/types"
+import { auroraProductCatalog } from "@/lib/products/catalog"
+import type { AuroraProduct } from "@/lib/products/types"
+import type { ProductRecommendation } from "@/lib/recommendations/types"
 import {
   createSkinReport,
   deleteSkinReportById,
@@ -19,9 +17,15 @@ import {
   getSkinReportById,
 } from "@/lib/reports/mock-report-store"
 import type { SkinReport } from "@/lib/reports/types"
+import type {
+  ClimateRecommendation,
+  ClimateReportContext,
+  WeatherProductTag,
+} from "@/lib/weather/types"
 
 const reportInclude = {
   assessment: true,
+  climateSnapshot: true,
   recommendations: true,
 } satisfies Prisma.SkinReportInclude
 
@@ -68,17 +72,34 @@ const recommendationConcernMap: Record<SkinConcern, string[]> = {
   oiliness: ["oiliness"],
 }
 
+const weatherProductTags = new Set<WeatherProductTag>([
+  "barrier-support",
+  "richer-moisturizer",
+  "gentle-cleanser",
+  "lightweight-moisturizer",
+  "non-comedogenic",
+  "gel-cleanser",
+  "lightweight-routine",
+  "hydration",
+  "sunscreen-support",
+  "gentle-cleansing",
+  "antioxidant",
+  "sunscreen",
+  "protective-routine",
+])
+
 export async function createReportRecord(
   assessment: SkinAssessment,
-  userId?: string
+  userId?: string,
+  climate?: ClimateReportContext
 ): Promise<SkinReport> {
   if (!isPrismaAvailable) {
-    return createSkinReport(assessment, userId)
+    return createSkinReport(assessment, userId, climate)
   }
 
   try {
     const prisma = getPrismaClient()
-    const recommendations = buildRecommendations(assessment)
+    const recommendations = buildRecommendations(assessment, climate)
     const record = await prisma.skinReport.create({
       data: {
         userId,
@@ -99,6 +120,39 @@ export async function createReportRecord(
             oilinessBand: severityBandToDb[assessment.concerns.oiliness],
           },
         },
+        climateSnapshot: climate
+          ? {
+              create: {
+                locationName: climate.snapshot.location.name,
+                country: climate.snapshot.location.country,
+                latitudeRounded: climate.snapshot.location.latitude,
+                longitudeRounded: climate.snapshot.location.longitude,
+                temperatureCelsius: climate.snapshot.temperatureCelsius,
+                feelsLikeCelsius: climate.snapshot.feelsLikeCelsius,
+                humidityPercent: Math.round(climate.snapshot.humidityPercent),
+                pressureHpa: roundNullable(climate.snapshot.pressureHpa),
+                windSpeedMps: climate.snapshot.windSpeedMps,
+                cloudCoverPercent: roundNullable(
+                  climate.snapshot.cloudCoverPercent
+                ),
+                visibilityMeters: roundNullable(
+                  climate.snapshot.visibilityMeters
+                ),
+                condition: climate.snapshot.condition,
+                description: climate.snapshot.description,
+                uvIndex: climate.snapshot.uvIndex,
+                pm25: climate.snapshot.pm25,
+                pm10: climate.snapshot.pm10,
+                airQualityIndex: roundNullable(
+                  climate.snapshot.airQualityIndex
+                ),
+                provider: climate.snapshot.provider,
+                recommendations:
+                  climate.recommendations as Prisma.InputJsonValue,
+                observedAt: new Date(climate.snapshot.observedAt),
+              },
+            }
+          : undefined,
         recommendations: {
           create: recommendations.map((recommendation) => ({
             productName: recommendation.product.name,
@@ -122,7 +176,7 @@ export async function createReportRecord(
     return mapReportRecord(record)
   } catch (error) {
     logDatabaseFallback("create report", error)
-    return createSkinReport(assessment, userId)
+    return createSkinReport(assessment, userId, climate)
   }
 }
 
@@ -187,7 +241,8 @@ export async function deleteReportRecord(id: string): Promise<void> {
 }
 
 function buildRecommendations(
-  assessment: SkinAssessment
+  assessment: SkinAssessment,
+  climate?: ClimateReportContext
 ): ProductRecommendation[] {
   const concerns = Object.keys(assessment.concerns) as SkinConcern[]
   const recommendationConcerns = concerns.flatMap(
@@ -206,6 +261,7 @@ function buildRecommendations(
     skinType: assessment.skinType,
     concerns: recommendationConcerns,
     severityBands,
+    climateTags: getClimateTags(climate),
     maxResults: 4,
   })
 }
@@ -245,29 +301,137 @@ function mapReportRecord(record: ReportWithRelations): SkinReport {
       guidance: getStringArray(record.guidance),
       disclaimer: record.disclaimer,
     },
-    recommendations: record.recommendations.map(mapRecommendationRecord),
+    recommendations: record.recommendations
+      .map(mapRecommendationRecord)
+      .filter(
+        (recommendation): recommendation is ProductRecommendation =>
+          recommendation !== null
+      ),
     privacy: {
       imageStored: false,
       imageRetentionConsent: false,
     },
+    climate: record.climateSnapshot
+      ? mapClimateSnapshot(record.climateSnapshot)
+      : null,
   }
+}
+
+function mapClimateSnapshot(
+  snapshot: NonNullable<ReportWithRelations["climateSnapshot"]>
+): ClimateReportContext | null {
+  if (
+    snapshot.provider !== "openweather" ||
+    snapshot.latitudeRounded === null ||
+    snapshot.longitudeRounded === null ||
+    snapshot.feelsLikeCelsius === null ||
+    !snapshot.condition ||
+    !snapshot.description
+  ) {
+    return null
+  }
+
+  return {
+    snapshot: {
+      provider: "openweather",
+      location: {
+        name: snapshot.locationName,
+        country: snapshot.country,
+        latitude: snapshot.latitudeRounded,
+        longitude: snapshot.longitudeRounded,
+      },
+      observedAt: snapshot.observedAt.toISOString(),
+      temperatureCelsius: snapshot.temperatureCelsius,
+      feelsLikeCelsius: snapshot.feelsLikeCelsius,
+      humidityPercent: snapshot.humidityPercent,
+      pressureHpa: snapshot.pressureHpa,
+      windSpeedMps: snapshot.windSpeedMps,
+      cloudCoverPercent: snapshot.cloudCoverPercent,
+      visibilityMeters: snapshot.visibilityMeters,
+      condition: snapshot.condition,
+      description: snapshot.description,
+      weatherIconCode: null,
+      uvIndex: snapshot.uvIndex,
+      pm25: snapshot.pm25,
+      pm10: snapshot.pm10,
+      airQualityIndex: snapshot.airQualityIndex,
+    },
+    recommendations: getClimateRecommendationArray(snapshot.recommendations),
+  }
+}
+
+function getClimateTags(
+  climate: ClimateReportContext | undefined
+): WeatherProductTag[] {
+  return Array.from(
+    new Set(
+      climate?.recommendations.flatMap(
+        (recommendation) => recommendation.recommendedProductTags
+      ) ?? []
+    )
+  )
+}
+
+function getClimateRecommendationArray(
+  value: Prisma.JsonValue
+): ClimateRecommendation[] {
+  if (!Array.isArray(value)) return []
+  return value.filter(isClimateRecommendation)
+}
+
+function isClimateRecommendation(
+  value: Prisma.JsonValue
+): value is ClimateRecommendation {
+  if (!value || Array.isArray(value) || typeof value !== "object") return false
+
+  return (
+    typeof value.code === "string" &&
+    typeof value.title === "string" &&
+    typeof value.explanation === "string" &&
+    (value.priority === "low" ||
+      value.priority === "medium" ||
+      value.priority === "high") &&
+    Array.isArray(value.recommendedProductTags) &&
+    value.recommendedProductTags.every(
+      (tag) =>
+        typeof tag === "string" &&
+        weatherProductTags.has(tag as WeatherProductTag)
+    )
+  )
+}
+
+function roundNullable(value: number | null): number | null {
+  return value === null ? null : Math.round(value)
 }
 
 function mapRecommendationRecord(
   recommendation: ReportWithRelations["recommendations"][number]
-): ProductRecommendation {
+): ProductRecommendation | null {
+  const product = getRecommendationProduct(recommendation)
+
+  if (!product) {
+    return null
+  }
+
   return {
-    product: getRecommendationProduct(recommendation),
-    matchedConcerns: getStringArray(recommendation.matchedConcerns),
+    product,
+    matchedConcerns: getStringArray(recommendation.matchedConcerns).filter(
+      (concern): concern is ProductRecommendation["matchedConcerns"][number] =>
+        product.skinConcerns.includes(
+          concern as ProductRecommendation["matchedConcerns"][number]
+        )
+    ),
     reason: recommendation.reason,
     priorityBand: severityBandFromDb[recommendation.priorityBand],
+    confidenceBand: "moderate",
+    score: product.recommendationPriority,
   }
 }
 
 function getRecommendationProduct(
   recommendation: ReportWithRelations["recommendations"][number]
-): AuroraProduct {
-  const product = auroraProducts.find(
+): AuroraProduct | null {
+  const product = auroraProductCatalog.find(
     (item) => item.name === recommendation.productName
   )
 
@@ -278,22 +442,7 @@ function getRecommendationProduct(
     }
   }
 
-  return {
-    id: recommendation.productName.toLowerCase().replaceAll(" ", "-"),
-    name: recommendation.productName,
-    description: null,
-    shortDescription: null,
-    price: null,
-    regularPrice: null,
-    categories: ["face-care"],
-    tags: [],
-    ingredientsHighlight: [],
-    imageUrl: "",
-    productUrl: recommendation.productUrl ?? "",
-    suitableConcerns: [],
-    recommendationReason: recommendation.reason,
-    defaultFaceScanEligible: true,
-  }
+  return null
 }
 
 function getStringArray(value: Prisma.JsonValue): string[] {

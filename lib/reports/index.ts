@@ -12,7 +12,9 @@ export async function getReportDetail(
   return reports[reportId] ?? null
 }
 
-export async function getSkinReport(reportId: string): Promise<SkinReport | null> {
+export async function getSkinReport(
+  reportId: string
+): Promise<SkinReport | null> {
   return getReport(reportId)
 }
 
